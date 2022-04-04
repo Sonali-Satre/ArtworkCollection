@@ -1,0 +1,79 @@
+<!-- Art Work Header -->
+<div [ngClass]="(isDataLoading===true)?'withSpinnerHeader':'withoutSpinnerHeader'">
+    <h1>ART COLLECTION</h1>
+</div>
+<br>
+
+<!-- Spinner Code -->
+<div *ngIf="isDataLoading" class="spinner">
+    <nx-spinner nxSize="large"></nx-spinner>
+</div>
+
+<!-- Reactive Form with two inputs -->
+<form [formGroup]="artGalleryInputForm">
+    <div *ngIf="!isDataLoading" nxLayout="grid">
+        <div nxRow>
+            <div nxCol="2">
+            </div>
+            <div nxCol="4">
+                <nx-formfield nxLabel="Filter:" formControlName="styleTitlesDropdown">
+                    <nx-multi-select placeholder="Style" [options]="stylesTitles" selectLabel="name" selectValue="id"
+                        [(ngModel)]="model" (ngModelChange)="onStyleTitleDropdownSelect($event)"
+                        [ngModelOptions]="{standalone: true}"></nx-multi-select>
+                </nx-formfield>
+            </div>
+
+            <div nxCol="4">
+                <nx-formfield nxLabel="Sort by:">
+                    <nx-dropdown [(ngModel)]="model" formControlName="sortArtDetailsDropdown"
+                        placeholder="Recommendation" (ngModelChange)="onSortDropdownSelect($event)">
+                        <nx-dropdown-item *ngFor="let item of sortOptions" [nxValue]="item">
+                            {{item}}
+                        </nx-dropdown-item>
+                    </nx-dropdown>
+                </nx-formfield>
+            </div>
+            <div nxCol="2">
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<!-- Art Gallery Images Grid -->
+<div *ngIf="!isDataLoading">
+    <div nxRow>
+        <div nxCol="3" *ngFor="let art of allArtworksDetails; let i = index">
+            <nx-card class="art-card">
+                <nx-card-header>
+                    <img src="https://www.artic.edu/iiif/2/{{art.image_id}}/full/843,/0/default.jpg" alt=""
+                        class="art-images">
+                </nx-card-header>
+                <p nxHeadline="subsection-xsmall" class="nx-margin-bottom-m artWorks-name">
+                    {{art.title}}</p>
+                <span class="artist-details">
+                    <label>{{art.artist_title}}</label>
+                    <label *ngIf="art.date_start==='' || art.date_end===''"
+                        class="location-details">{{art.place_of_origin}}</label><br>
+                    <label *ngIf="art.date_start === art.date_end ;else defaultArtLocation"
+                        class="location-details">{{art.place_of_origin}} ({{art.date_start}})</label><br>
+                    <ng-template #defaultArtLocation>
+                        <label *ngIf="art.place_of_origin" class="location-details">{{art.place_of_origin}}
+                            ({{art.date_start}} - {{art.date_end}})</label>
+                    </ng-template>
+                    <label class="location-details">{{art.material_titles[0]}}</label>
+                </span>
+                <div></div>
+            </nx-card>
+            <br>
+        </div>
+    </div>
+</div>
+<br>
+
+<!-- Pagination Code -->
+<div class="pagination" *ngIf="enablePagination">
+    <nx-pagination [nxCount]="count" [nxPage]="page" [nxPerPage]="perPage" nxType="advanced" (nxGoPrev)="prevPage()"
+        (nxGoNext)="nextPage()" (nxGoPage)="goToPage($event)">
+    </nx-pagination>
+</div>
